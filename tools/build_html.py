@@ -323,7 +323,7 @@ def build(outdir):
                      for sid, _, th, b in r.sections)
     updated = datetime.date.today().strftime("%B %Y")
     has_pdf = os.path.exists(os.path.join(ROOT, PDF_NAME))
-    pdf_btn = ("<a class=\"btn\" href=\"%s\" download>Download PDF</a>" % PDF_NAME) if has_pdf else ""
+    pdf_btn = ("<a class=\"btn\" href=\"%s\" target=\"_blank\" rel=\"noopener\">View PDF</a>" % PDF_NAME) if has_pdf else ""
 
     page = f"""<!doctype html>
 <html lang="en">
