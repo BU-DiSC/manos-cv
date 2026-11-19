@@ -1,0 +1,223 @@
+%% athcv.sty -- look & feel for the CV (ported from CV_EN_2026-11.docx)
+%% All formatting lives here; the content files in sections/ only use the
+%% semantic macros defined below. Compile with XeLaTeX (see Makefile).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{athcv}[2026/11/18 CV style]
+
+% ---------------------------------------------------------------- page ----
+% Word: Letter, margins T 0.5in / R 0.75in / B 0.5in / L 0.5in,
+% header & footer 0.47in from the edge.
+\RequirePackage[letterpaper,
+  left=0.72in, right=0.72in,
+  top=0.6in, bottom=0.55in,
+  includehead, includefoot,
+  headheight=15pt, headsep=13pt, footskip=26pt]{geometry}
+
+% --------------------------------------------------------------- fonts ----
+% Body: Garamond 11pt (Monotype Garamond, as shipped with MS Office).
+% Header/footer: Tahoma. Falls back to EB Garamond if MS Garamond is absent.
+\RequirePackage{fix-cm}   % scalable CM for math fallback (avoids size warnings)
+\RequirePackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\newcommand*\cv@wordfonts{/Applications/Microsoft Word.app/Contents/Resources/DFonts/}
+\IfFileExists{fonts/GARA.TTF}{%
+  \setmainfont{GARA.TTF}[Path=fonts/, BoldFont=GARABD.TTF,
+    ItalicFont=GARAIT.TTF, BoldItalicFont=GARABDIT.TTF]%
+}{\IfFileExists{\cv@wordfonts GARA.TTF}{%
+  \setmainfont{GARA.TTF}[Path=\cv@wordfonts, BoldFont=GARABD.TTF,
+    ItalicFont=GARAIT.TTF, BoldItalicFont=GARABDIT.TTF]%
+}{%
+  \PackageWarning{athcv}{MS Garamond not found, using EB Garamond}%
+  \setmainfont{EB Garamond}%
+}}
+\IfFontExistsTF{Tahoma}{\newfontfamily\tahoma{Tahoma}}{\let\tahoma\sffamily}
+
+% Word's single line spacing for Garamond 11pt is ~12.3pt
+\RequirePackage[fontsize=11pt]{scrextend}
+\renewcommand\normalsize{\fontsize{11pt}{12.6pt}\selectfont}
+\normalsize
+\setlength\parindent{0pt}
+\setlength\parskip{0pt plus 1pt}  % stretch only helps page breaking (bottoms are ragged)
+\frenchspacing
+\clubpenalty=10000 \widowpenalty=10000 % Word widow/orphan control
+\emergencystretch=1.5em
+\RequirePackage{microtype}
+
+% ------------------------------------------------------------- colours ----
+\RequirePackage{xcolor}
+\definecolor{cvlink}{HTML}{0000FF}
+\definecolor{cvaward}{HTML}{FF0000}
+
+% --------------------------------------------------------------- links ----
+\RequirePackage[normalem]{ulem}
+\setlength\ULdepth{1.7pt}\renewcommand\ULthickness{0.45pt}
+\RequirePackage[hidelinks]{hyperref}
+\urlstyle{same}
+% every \href is rendered like Word's "Hyperlink" style: blue + underlined
+\let\cv@href\href
+\renewcommand\href[2]{\cv@href{#1}{\textcolor{cvlink}{\uline{#2}}}}
+
+% ------------------------------------------------- Word-style small caps ----
+% Word fakes small caps (Garamond/Tahoma have none): lowercase letters are
+% set as capitals at ~78% size. \fakesc{...} reproduces that.
+\ExplSyntaxOn
+\NewDocumentCommand \fakesc { m }
+  { \text_map_inline:nn {#1} { \__cv_sc_char:n {##1} } }
+\cs_new_protected:Npn \__cv_sc_char:n #1
+  {
+    \str_if_eq:eeTF { \text_uppercase:n {#1} } {#1}
+      {#1}
+      { { \fontsize{\fp_eval:n{0.78*\f@size}pt}{0pt}\selectfont
+          \text_uppercase:n {#1} } }
+  }
+\ExplSyntaxOff
+
+% ------------------------------------------------------ header / footer ----
+\RequirePackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand\headrulewidth{0.5pt}
+\fancyhead[L]{\tahoma\fontsize{11pt}{13pt}\selectfont\fakesc{\cvheaderleft}}
+\fancyhead[R]{\tahoma\fontsize{11pt}{13pt}\selectfont\fakesc{\cvheaderright}}
+\fancyfoot[R]{\tahoma\fontsize{9pt}{11pt}\selectfont\thepage/\pageref*{LastPage}}
+\fancypagestyle{plain}{}  % same on page 1
+\newcommand\cvheaderleft{Curriculum Vitae}
+\newcommand\cvheaderright{}
+
+% ----------------------------------------------------------- title block ----
+% \cvtitle{Name}{line}{line}...  (first arg 18pt, rest 12pt, centred)
+\NewDocumentCommand\cvtitle{m m m m}{%
+  \begin{center}
+    {\fontsize{18pt}{21pt}\selectfont #1\par}
+    \fontsize{12pt}{14pt}\selectfont #2\par #3\par #4\par
+  \end{center}\vspace{-6pt}}
+
+% -------------------------------------------------------------- headings ----
+% \cvkeep{<len>}: break the page here unless <len> of space is left
+% (robust replacement for needspace; pages are ragged-bottom like Word).
+\raggedbottom
+% (skipped right after a heading, so a heading never strands its first sub-heading)
+\newcommand\cvkeep[1]{\par\ifnum\lastpenalty=10000 \else
+  \vskip 0pt plus #1\penalty0 \vskip 0pt plus -#1\relax\fi}
+% Section heading: bold small caps
+\newcommand\cvsection[1]{%
+  \setlength\cventryskip{\cv@defaultentryskip}%
+  \par\cvkeep{4\baselineskip}\addvspace{9pt}%
+  {\fontsize{12pt}{14pt}\selectfont\bfseries\fakesc{#1}\par}%
+  \nopagebreak\vspace{2pt}\nopagebreak}
+% Sub-heading: bold (e.g. "Postdocs", "Refereed Workshop Papers", "2024")
+\newcommand\cvsubsection[1]{%
+  \par\cvkeep{3\baselineskip}\addvspace{3pt}%
+  {\bfseries #1\par}\nopagebreak}
+% Sub-sub-heading: bold, slightly indented (e.g. "First Reader")
+\newcommand\cvsubsubsection[1]{%
+  \par\cvkeep{3\baselineskip}%
+  {\hspace*{0.04in}\bfseries #1\par}\nopagebreak}
+
+% ---------------------------------------------------------- body blocks ----
+% Justified free text paragraph
+\newcommand\cvpara[1]{\par #1\par}
+
+% Indented one-line entry with hanging indent (lists under sub-headings).
+% Word uses different row spacing per section; a section file may set
+% \setlength\cventryskip{..} right after \cvsection (reset at each section).
+\newlength\cventryskip
+\newcommand\cv@defaultentryskip{1pt}
+\newcommand\cventry[1]{\par\addvspace{\cventryskip}{\raggedright
+  \leftskip=0.1in\hangindent=0.15in\hangafter=1 #1\par}}
+
+% \dated{date}{text}: date in a left column (honors, grants, awards, ...)
+\newlength\cvdatewidth  \setlength\cvdatewidth{0.78in}
+\newcommand\dated[2]{\par\addvspace{3.6pt}%
+  {\hangindent=\cvdatewidth\hangafter=1
+   \makebox[\cvdatewidth][l]{#1}\ignorespaces #2\par}}
+% Same, used for "Professional Memberships" (indented date column)
+\newcommand\membership[2]{\par\addvspace{3.6pt}%
+  {\leftskip=0.06in\hangindent=1in\hangafter=1
+   \makebox[0.94in][l]{#1}\ignorespaces #2\par}}
+
+% \degree{degree and date}{institution}{detail lines, separated by \\}
+\newcommand\degree[3]{\par\addvspace{4pt}%
+  \textbf{#1}\hfill\textbf{#2}\par
+  {\leftskip=0.85in #3\par}}
+
+% \job{dates}{role}{organisation}{location}
+\newlength\cv@tmplen
+\newcommand\job[4]{\par\addvspace{5.2pt}%
+  \settowidth\cv@tmplen{#4}%
+  \makebox[1.2in][l]{#1}%
+  \parbox[t]{\dimexpr\linewidth-1.2in-\cv@tmplen-0.15in}{\raggedright\textbf{#2} at \textbf{#3}}%
+  \hfill #4\par}
+
+% \phdgrad{name (dates)}{dissertation title}{first position}
+\newcommand\phdgrad[3]{%
+  \cventry{#1}%
+  \cventry{\hspace*{0.1in}Dissertation: ``#2''}%
+  \cventry{\hspace*{0.1in}First Position: #3}}
+
+% Teaching: \teachinst{\textbf{University}, Department}  \course{name}{terms}
+\newcommand\teachinst[1]{\par\addvspace{3pt}\hspace*{0.04in}#1\par\nopagebreak}
+\newcommand\course[2]{\par\addvspace{2.5pt}\hspace*{0.15in}\makebox[4.0in][l]{#1}#2\par}
+
+% Patents
+\newcommand\patent[2]{\par\addvspace{3pt}{\raggedright\leftskip=0.15in
+  \hangindent=0.2in\hangafter=1\makebox[0.2in][l]{\textbullet}``#1'', #2\par}}
+
+% --------------------------------------------------------- publications ----
+\RequirePackage{enumitem}
+% Publication numbers run continuously across all categories.
+\newlist{publist}{enumerate}{1}
+\setlist[publist]{label=\arabic*., leftmargin=0.3in, labelsep=0.08in,
+  itemsep=4.2pt, parsep=0pt, topsep=1pt, align=right}
+\RequirePackage{xspace}
+\newcommand\me{\textbf{M. Athanassoulis}\xspace}          % the CV owner
+\newcommand\adv[1]{\uline{#1}}                        % advisee co-author
+\newcommand\award[1]{\textcolor{cvaward}{\textit{#1}}} % red italic note
+\newcommand\awardbf[1]{\textcolor{cvaward}{\textbf{#1}}}% red bold note
+\newcommand\awardrm[1]{\textcolor{cvaward}{#1}}        % red upright
+\newcommand\pubcategory[1]{\par\addvspace{3pt}\cvkeep{3\baselineskip}%
+  {\hspace*{0.03in}\bfseries #1\par}\nopagebreak}
+% Each papers block continues numbering from the previous one.
+\newcounter{cvpubs}
+\newenvironment{papers}
+  {\begin{publist}[start=\numexpr\value{cvpubs}+1\relax]}
+  {\setcounter{cvpubs}{\value{publisti}}\end{publist}}
+
+% \paper{ authors=..., title=..., venue=..., year=..., after=..., url=..., note=... }
+%   renders:  authors, "title", venue, YEAR after. link note
+\ExplSyntaxOn
+\tl_new:N \l__cv_authors_tl \tl_new:N \l__cv_title_tl \tl_new:N \l__cv_venue_tl
+\tl_new:N \l__cv_year_tl \tl_new:N \l__cv_after_tl \tl_new:N \l__cv_url_tl
+\tl_new:N \l__cv_note_tl
+\keys_define:nn { cv/paper }
+  {
+    authors .tl_set:N = \l__cv_authors_tl ,
+    title   .tl_set:N = \l__cv_title_tl ,
+    venue   .tl_set:N = \l__cv_venue_tl ,
+    year    .tl_set:N = \l__cv_year_tl ,
+    after   .tl_set:N = \l__cv_after_tl ,
+    url     .tl_set:N = \l__cv_url_tl ,
+    note    .tl_set:N = \l__cv_note_tl ,
+  }
+\NewDocumentCommand \paper { m }
+  {
+    \group_begin:
+    \keys_set:nn { cv/paper } {#1}
+    \item
+    \l__cv_authors_tl ,~``\l__cv_title_tl '',~\l__cv_venue_tl
+    \tl_if_blank:VF \l__cv_year_tl { ,~\textbf{\l__cv_year_tl} }
+    \tl_if_blank:VF \l__cv_after_tl { ~\l__cv_after_tl }
+    .
+    \tl_if_blank:VF \l__cv_url_tl { ~\exp_args:NV \href \l__cv_url_tl {link} }
+    \tl_if_blank:VF \l__cv_note_tl { ~\l__cv_note_tl }
+    \par
+    \group_end:
+  }
+\ExplSyntaxOff
+
+% ------------------------------------------------------------ last update ----
+\RequirePackage[en-US]{datetime2}
+\DTMlangsetup[en-US]{showdayofmonth=false}
+\newcommand\lastupdate{\par\vspace{1.5\baselineskip}Last update: \today.\par}
+
+\endinput

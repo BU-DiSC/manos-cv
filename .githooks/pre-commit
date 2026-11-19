@@ -1,0 +1,14 @@
+#!/bin/sh
+# Rebuild the PDF whenever CV sources are part of the commit, and stage it,
+# so the committed ManosAthanassoulisCV-EN.pdf always matches the sources.
+# Enable once per clone:  git config core.hooksPath .githooks
+PDF=ManosAthanassoulisCV-EN.pdf
+if git diff --cached --name-only | grep -qE '^(cv\.tex|athcv\.sty|sections/.*\.tex)$'; then
+  if [ ! -f fonts/GARA.TTF ] && [ ! -f "/Applications/Microsoft Word.app/Contents/Resources/DFonts/GARA.TTF" ]; then
+    echo "pre-commit: MS Garamond not found (fonts/ or Word); refusing to commit a PDF in a fallback font." >&2
+    exit 1
+  fi
+  echo "pre-commit: rebuilding $PDF ..."
+  make >/dev/null || { echo "pre-commit: LaTeX build failed; run 'make' to see the error." >&2; exit 1; }
+  git add "$PDF"
+fi

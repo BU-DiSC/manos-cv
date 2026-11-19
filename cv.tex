@@ -1,0 +1,38 @@
+% Curriculum Vitae -- Manoussos-Gavriil (Manos) Athanassoulis
+% Build:  make        (or: latexmk -xelatex cv.tex)
+% Content lives in sections/*.tex; styling lives in athcv.sty.
+\documentclass[11pt]{article}
+\usepackage{athcv}
+
+\renewcommand\cvheaderright{Manoussos-Gavriil (Manos) Athanassoulis}
+\hypersetup{pdftitle={Curriculum Vitae -- Manos Athanassoulis},
+            pdfauthor={Manos Athanassoulis}}
+
+\begin{document}
+
+\cvtitle{Manoussos-Gavriil (Manos) Athanassoulis}
+  {Associate Professor}
+  {Department of Computer Science, College of Arts and Sciences, Boston University}
+  {Email: \href{mailto:mathan@bu.edu}{mathan@bu.edu}\quad
+   Web: \href{http://cs-people.bu.edu/mathan}{http://cs-people.bu.edu/mathan}\quad
+   \href{https://scholar.google.com/citations?user=RyXHY68AAAAJ&hl=en}{Google Scholar Page}}
+
+% Section order -- reorder / comment out lines to change the CV layout.
+\input{sections/research}
+\input{sections/education}
+\input{sections/experience}
+\input{sections/honors}
+\input{sections/grants}
+\input{sections/publications}
+\input{sections/patents}
+\input{sections/mentoring}
+\input{sections/student-awards}
+\input{sections/outreach}
+\input{sections/teaching}
+\input{sections/service}
+\input{sections/university-service}
+\input{sections/talks}
+\input{sections/media}
+
+\lastupdate
+\end{document}

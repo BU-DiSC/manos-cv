@@ -1,0 +1,15 @@
+# LaTeX build by-products
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.xdv
+*.synctex.gz
+# Generated web page (built by GitHub Actions)
+site/
+# MS Garamond is licensed with Office and must not be redistributed
+fonts/
+# Local tool settings
+.claude/
+.DS_Store
