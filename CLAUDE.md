@@ -6,7 +6,7 @@ Build: `make` (XeLaTeX via latexmk) → `ManosAthanassoulisCV-EN.pdf`, which is 
 - `athcv.sty`: **all** look & feel (fonts, margins, spacing, header/footer, macros). Content files never contain raw formatting such as `\vspace`, `\hspace` or font sizes.
 - `sections/*.tex`: one file per CV section, using only the macros below.
 - `tools/build_html.py` + `tools/cv.css`: render the same sources as the web CV, published to GitHub Pages by `.github/workflows/pages.yml` on every push to `main`. If you add or change a macro in `athcv.sty`, mirror it in `build_html.py`. Check with `python3 tools/build_html.py` (→ `site/`, git-ignored).
-- Git: repo `manathan1984/manos-cv`. The `.githooks/pre-commit` hook (enabled via `git config core.hooksPath .githooks`) rebuilds and stages the PDF whenever sources change. The PDF is committed because CI has no MS Garamond. `fonts/` holds local copies of MS Garamond and is git-ignored: it is not redistributable, so never commit it.
+- Git: repo `BU-DiSC/manos-cv`. The `.githooks/pre-commit` hook (enabled via `git config core.hooksPath .githooks`) rebuilds and stages the PDF whenever sources change. The PDF is committed because CI has no MS Garamond. `fonts/` holds local copies of MS Garamond and is git-ignored: it is not redistributable, so never commit it.
 
 ## Conventions when updating content
 - Entries are **newest first** in every section. Insert new items at the top of their list or year.

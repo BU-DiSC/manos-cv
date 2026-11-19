@@ -2,8 +2,8 @@
 
 Curriculum Vitae of Manos Athanassoulis, written in LaTeX.
 
-- **Web version:** https://manathan1984.github.io/manos-cv/
-- **PDF:** https://manathan1984.github.io/manos-cv/ManosAthanassoulisCV-EN.pdf
+- **Web version:** https://bu-disc.github.io/manos-cv/
+- **PDF:** https://bu-disc.github.io/manos-cv/ManosAthanassoulisCV-EN.pdf
 
 ## Layout
 - `cv.tex`: title block and section order
