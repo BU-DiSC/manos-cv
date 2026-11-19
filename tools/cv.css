@@ -94,7 +94,7 @@ section > p { text-align: justify; hyphens: auto; }
 .entry.grad { text-indent: 0; padding-left: 0; margin-bottom: 6px; }
 .entry .sub { padding-left: 1.4em; color: var(--muted); }
 
-.courses { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 3px; padding-left: 1em; }
+.courses { display: grid; grid-template-columns: minmax(0, 25em) minmax(0, 1fr); column-gap: 24px; row-gap: 3px; padding-left: 1em; }
 .terms { color: var(--muted); white-space: nowrap; }
 
 .patents { margin: 0; padding-left: 1.3em; }
