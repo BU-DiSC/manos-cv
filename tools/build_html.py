@@ -333,8 +333,9 @@ def build(outdir):
 <title>{plain(name)} — Curriculum Vitae</title>
 <meta name="description" content="Curriculum Vitae of {plain(name)}, {plain(role)}, {plain(dept)}.">
 <script>
-  // apply the saved theme before first paint (auto | light | dark)
-  try {{ var t = localStorage.getItem("cv-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; }} catch (e) {{}}
+  // start in the browser's theme (light or dark), set before first paint
+  document.documentElement.dataset.theme =
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -351,7 +352,7 @@ def build(outdir):
     <p class="role">{inline(role)}</p>
     <p class="dept">{inline(dept)}</p>
     <p class="contact">{inline(contact)}</p>
-    <p class="actions">{pdf_btn}<span class="stat">{r.npubs} publications</span><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Color theme">Theme: Auto</button></p>
+    <p class="actions">{pdf_btn}<span class="stat">{r.npubs} publications</span><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">Dark mode</button></p>
   </div>
 </header>
 <div class="wrap layout">
@@ -365,14 +366,15 @@ def build(outdir):
 </div>
 <script>
   (function () {{
-    var order = ["auto", "light", "dark"], names = {{auto: "Auto", light: "Light", dark: "Dark"}};
+    // two themes; the button offers the other one
     var btn = document.getElementById("theme-toggle"), root = document.documentElement;
-    function current() {{ return root.dataset.theme || "auto"; }}
-    function show() {{ btn.textContent = "Theme: " + names[current()]; }}
+    function show() {{
+      var dark = root.dataset.theme === "dark";
+      btn.textContent = dark ? "Light mode" : "Dark mode";
+      btn.setAttribute("aria-pressed", dark ? "true" : "false");
+    }}
     btn.addEventListener("click", function () {{
-      var next = order[(order.indexOf(current()) + 1) % order.length];
-      if (next === "auto") delete root.dataset.theme; else root.dataset.theme = next;
-      try {{ if (next === "auto") localStorage.removeItem("cv-theme"); else localStorage.setItem("cv-theme", next); }} catch (e) {{}}
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
       show();
     }});
     show();
